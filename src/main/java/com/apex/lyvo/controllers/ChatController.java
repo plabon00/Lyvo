@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
-@CrossOrigin("https://localhost:3000")
+@CrossOrigin("http://localhost:5173")
 public class ChatController {
 
     @Autowired
