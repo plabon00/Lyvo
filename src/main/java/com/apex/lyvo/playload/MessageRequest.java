@@ -17,4 +17,5 @@ public class MessageRequest {
     private String sender ;
     private String roomId ;
     private LocalDateTime messageTime ;
+
 }

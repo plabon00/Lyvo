@@ -11,42 +11,37 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
+
 
 @Controller
 @CrossOrigin("http://localhost:5173")
 public class ChatController {
 
     @Autowired
-    RoomRepo roomrepository ;
+    RoomRepo roomrepository;
 
-    /* For Sending And Receiving Messages */
     @MessageMapping("/sendMessage/{roomId}")
     @SendTo("/topic/room/{roomId}")
     public Message sendMessage(
             @DestinationVariable String roomId,
-            @RequestBody MessageRequest request
+            MessageRequest request
     ){
+        System.out.println("📨 Received . from -" + request.getSender());
 
-        Room room = roomrepository.findByRoomId(request.getRoomId()) ;
+        Room room = roomrepository.findByRoomId(roomId);
 
-        Message message = new Message() ;
+        // Create Message with auto timestamp
+        Message message = new Message(request.getSender(), request.getContent());
 
-        message.setContent(request.getContent());
-        message.setSender(request.getSender());
-        message.setTimeStamp(request.getMessageTime());
-
-        if (room != null){
+        if (room != null) {
             room.getMassages().add(message);
             roomrepository.save(room);
-        }else {
-            throw new RuntimeException("Room not found !!!");
+        } else {
+            throw new RuntimeException("Room not found: " + roomId);
         }
 
-        return message ;
-
+        System.out.println("✅ Message created with timestamp: " + message.getTimeStamp());
+        return message; // This includes the auto-generated timestamp
     }
-
-
 
 }
